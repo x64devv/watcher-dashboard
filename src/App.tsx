@@ -2,15 +2,28 @@ import React from 'react';
 import { Monitor } from 'lucide-react';
 import SiteSelector from './components/SiteSelector';
 import TabNavigation from './components/TabNavigation';
+import WebSocketStatus from './components/WebSocketStatus';
 import NginxStats from './components/NginxStats';
 import LaravelStats from './components/LaravelStats';
 import LogFeed from './components/LogFeed';
 import { useDashboardData } from './hooks/useDashboardData';
+import { useWebSocketContext } from './context/WebSocketContext';
 
 function App() {
   const { sites, selectedSite, dashboardData, isLoading, setSelectedSite } = useDashboardData();
+  const { isConnected, sendMessage } = useWebSocketContext();
   const [activeTab, setActiveTab] = React.useState('nginx');
 
+  // Example of sending a message when site changes
+  React.useEffect(() => {
+    if (isConnected && selectedSite) {
+      sendMessage(JSON.stringify({
+        type: 'site_changed',
+        siteId: selectedSite.id,
+        timestamp: new Date().toISOString()
+      }));
+    }
+  }, [selectedSite, isConnected, sendMessage]);
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -43,6 +56,7 @@ function App() {
               selectedSite={selectedSite}
               onSiteChange={setSelectedSite}
             />
+            <WebSocketStatus />
           </div>
         </div>
       </header>
