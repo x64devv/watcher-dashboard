@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Bug, Terminal } from 'lucide-react';
+import { Activity, Bug, Terminal, Monitor } from 'lucide-react';
 
 interface Tab {
   id: string;
@@ -16,6 +16,7 @@ const tabs: Tab[] = [
   { id: 'nginx', label: 'Nginx Statistics', icon: Activity },
   { id: 'laravel', label: 'Laravel Statistics', icon: Bug },
   { id: 'logs', label: 'Live Logs', icon: Terminal },
+  { id: 'websockets', label: 'WebSocket Manager', icon: Monitor },
 ];
 
 const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange }) => {
