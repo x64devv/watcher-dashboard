@@ -1,103 +1,7 @@
 import { useState, useEffect } from 'react';
-import { DashboardData, Site } from '../types/dashboard';
+import { DashboardData, Site, NginxStats, LaravelStats } from '../types/dashboard';
 
-// Mock data generator
-const generateMockData = (site: Site): DashboardData => ({
-  site,
-  nginx: {
-    totalVisits: Math.floor(Math.random() * 50000) + 10000,
-    uniqueVisitors: Math.floor(Math.random() * 25000) + 5000,
-    pageViews: Math.floor(Math.random() * 100000) + 20000,
-    bounceRate: Math.floor(Math.random() * 40) + 30,
-    avgSessionDuration: `${Math.floor(Math.random() * 5) + 2}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`,
-    topPages: [
-      { path: '/', visits: Math.floor(Math.random() * 5000) + 1000, percentage: 35 },
-      { path: '/about', visits: Math.floor(Math.random() * 3000) + 500, percentage: 20 },
-      { path: '/contact', visits: Math.floor(Math.random() * 2000) + 300, percentage: 15 },
-      { path: '/services', visits: Math.floor(Math.random() * 1500) + 200, percentage: 12 },
-      { path: '/blog', visits: Math.floor(Math.random() * 1000) + 100, percentage: 8 },
-    ],
-    browsers: [
-      { name: 'Chrome', count: Math.floor(Math.random() * 15000) + 5000, percentage: 65 },
-      { name: 'Firefox', count: Math.floor(Math.random() * 5000) + 1000, percentage: 20 },
-      { name: 'Safari', count: Math.floor(Math.random() * 3000) + 500, percentage: 10 },
-      { name: 'Edge', count: Math.floor(Math.random() * 1000) + 200, percentage: 5 },
-    ],
-    operatingSystems: [
-      { name: 'Windows', count: Math.floor(Math.random() * 12000) + 3000, percentage: 55 },
-      { name: 'macOS', count: Math.floor(Math.random() * 6000) + 1500, percentage: 25 },
-      { name: 'Linux', count: Math.floor(Math.random() * 3000) + 800, percentage: 12 },
-      { name: 'Android', count: Math.floor(Math.random() * 2000) + 500, percentage: 8 },
-    ],
-    devices: [
-      { type: 'Desktop', count: Math.floor(Math.random() * 15000) + 5000, percentage: 70 },
-      { type: 'Mobile', count: Math.floor(Math.random() * 8000) + 2000, percentage: 25 },
-      { type: 'Tablet', count: Math.floor(Math.random() * 2000) + 500, percentage: 5 },
-    ],
-    statusCodes: [
-      { code: '200', count: Math.floor(Math.random() * 45000) + 15000, percentage: 85 },
-      { code: '404', count: Math.floor(Math.random() * 3000) + 1000, percentage: 8 },
-      { code: '500', count: Math.floor(Math.random() * 1000) + 200, percentage: 4 },
-      { code: '301', count: Math.floor(Math.random() * 800) + 100, percentage: 3 },
-    ],
-    hourlyTraffic: Array.from({ length: 24 }, (_, i) => ({
-      hour: `${i.toString().padStart(2, '0')}:00`,
-      visits: Math.floor(Math.random() * 2000) + 100,
-    })),
-    countryStats: [
-      { country: 'United States', count: Math.floor(Math.random() * 8000) + 2000, percentage: 35 },
-      { country: 'United Kingdom', count: Math.floor(Math.random() * 4000) + 1000, percentage: 20 },
-      { country: 'Canada', count: Math.floor(Math.random() * 3000) + 800, percentage: 15 },
-      { country: 'Germany', count: Math.floor(Math.random() * 2000) + 500, percentage: 12 },
-      { country: 'France', count: Math.floor(Math.random() * 1500) + 300, percentage: 8 },
-    ],
-  },
-  laravel: {
-    totalLogs: Math.floor(Math.random() * 10000) + 1000,
-    errorCount: Math.floor(Math.random() * 100) + 10,
-    warningCount: Math.floor(Math.random() * 200) + 20,
-    infoCount: Math.floor(Math.random() * 500) + 100,
-    debugCount: Math.floor(Math.random() * 1000) + 200,
-    recentErrors: [
-      {
-        id: '1',
-        level: 'error',
-        message: 'Database connection failed',
-        timestamp: new Date(Date.now() - 300000).toISOString(),
-      },
-      {
-        id: '2',
-        level: 'warning',
-        message: 'Slow query detected: SELECT * FROM users',
-        timestamp: new Date(Date.now() - 600000).toISOString(),
-      },
-      {
-        id: '3',
-        level: 'error',
-        message: 'File not found: /storage/app/uploads/image.jpg',
-        timestamp: new Date(Date.now() - 900000).toISOString(),
-      },
-    ],
-    errorTrends: Array.from({ length: 24 }, (_, i) => ({
-      hour: `${i.toString().padStart(2, '0')}:00`,
-      errors: Math.floor(Math.random() * 20),
-    })),
-    slowQueries: [
-      {
-        query: 'SELECT * FROM users WHERE created_at > ?',
-        time: 2.5,
-        timestamp: new Date(Date.now() - 180000).toISOString(),
-      },
-      {
-        query: 'SELECT posts.*, users.name FROM posts JOIN users',
-        time: 1.8,
-        timestamp: new Date(Date.now() - 360000).toISOString(),
-      },
-    ],
-  },
-  liveLogs: [],
-});
-
+// Mock sites data (keeping this as static for now)
 const mockSites: Site[] = [
   { id: '1', name: 'Main Website', domain: 'example.com', status: 'online' },
   { id: '2', name: 'Blog', domain: 'blog.example.com', status: 'online' },
@@ -105,6 +9,39 @@ const mockSites: Site[] = [
   { id: '4', name: 'API Server', domain: 'api.example.com', status: 'online' },
   { id: '5', name: 'Dev Environment', domain: 'dev.example.com', status: 'offline' },
 ];
+
+// Default/initial data structure
+const getInitialNginxStats = (): NginxStats => ({
+  totalVisits: 0,
+  uniqueVisitors: 0,
+  pageViews: 0,
+  bounceRate: 0,
+  avgSessionDuration: '0:00',
+  topPages: [],
+  browsers: [],
+  operatingSystems: [],
+  devices: [],
+  statusCodes: [],
+  hourlyTraffic: Array.from({ length: 24 }, (_, i) => ({
+    hour: `${i.toString().padStart(2, '0')}:00`,
+    visits: 0,
+  })),
+  countryStats: [],
+});
+
+const getInitialLaravelStats = (): LaravelStats => ({
+  totalLogs: 0,
+  errorCount: 0,
+  warningCount: 0,
+  infoCount: 0,
+  debugCount: 0,
+  recentErrors: [],
+  errorTrends: Array.from({ length: 24 }, (_, i) => ({
+    hour: `${i.toString().padStart(2, '0')}:00`,
+    errors: 0,
+  })),
+  slowQueries: [],
+});
 
 const generateLiveLog = (id: string) => ({
   id,
@@ -126,35 +63,146 @@ const generateLiveLog = (id: string) => ({
 export const useDashboardData = () => {
   const [sites] = useState<Site[]>(mockSites);
   const [selectedSite, setSelectedSite] = useState<Site>(mockSites[0]);
-  const [dashboardData, setDashboardData] = useState<DashboardData>(() => 
-    generateMockData(mockSites[0])
-  );
+  const [dashboardData, setDashboardData] = useState<DashboardData>(() => ({
+    site: mockSites[0],
+    nginx: getInitialNginxStats(),
+    laravel: getInitialLaravelStats(),
+    liveLogs: [],
+  }));
   const [isLoading, setIsLoading] = useState(false);
 
-  // Simulate API call when site changes
+  // Handle WebSocket messages for Nginx stats (from 'main' connection)
   useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setDashboardData(generateMockData(selectedSite));
-      setIsLoading(false);
-    }, 500);
+    const handleNginxStats = (event: CustomEvent) => {
+      const { data, connectionId } = event.detail;
+      
+      if (connectionId === 'main' && data.type === 'nginx_stats') {
+        setDashboardData(prev => ({
+          ...prev,
+          nginx: {
+            ...prev.nginx,
+            ...data.stats,
+          },
+        }));
+      }
+    };
 
-    return () => clearTimeout(timer);
+    window.addEventListener('websocket:main:nginx_stats', handleNginxStats as EventListener);
+    
+    return () => {
+      window.removeEventListener('websocket:main:nginx_stats', handleNginxStats as EventListener);
+    };
+  }, []);
+
+  // Handle WebSocket messages for Laravel stats (from 'logs' connection)
+  useEffect(() => {
+    const handleLaravelStats = (event: CustomEvent) => {
+      const { data, connectionId } = event.detail;
+      
+      if (connectionId === 'logs' && data.type === 'laravel_stats') {
+        setDashboardData(prev => ({
+          ...prev,
+          laravel: {
+            ...prev.laravel,
+            ...data.stats,
+          },
+        }));
+      }
+    };
+
+    window.addEventListener('websocket:logs:laravel_stats', handleLaravelStats as EventListener);
+    
+    return () => {
+      window.removeEventListener('websocket:logs:laravel_stats', handleLaravelStats as EventListener);
+    };
+  }, []);
+
+  // Handle live log entries (from 'logs' connection)
+  useEffect(() => {
+    const handleLiveLog = (event: CustomEvent) => {
+      const { data, connectionId } = event.detail;
+      
+      if (connectionId === 'logs' && data.type === 'live_log') {
+        setDashboardData(prev => {
+          const newLog = {
+            id: data.log.id || Date.now().toString(),
+            level: data.log.level,
+            message: data.log.message,
+            timestamp: data.log.timestamp || new Date().toISOString(),
+            context: data.log.context,
+            extra: data.log.extra,
+          };
+          
+          const updatedLogs = [newLog, ...prev.liveLogs].slice(0, 100); // Keep only last 100 logs
+          
+          return {
+            ...prev,
+            liveLogs: updatedLogs,
+          };
+        });
+      }
+    };
+
+    window.addEventListener('websocket:logs:live_log', handleLiveLog as EventListener);
+    
+    return () => {
+      window.removeEventListener('websocket:logs:live_log', handleLiveLog as EventListener);
+    };
+  }, []);
+
+  // Handle general data updates (could be from either connection)
+  useEffect(() => {
+    const handleDataUpdate = (event: CustomEvent) => {
+      const { data, connectionId } = event.detail;
+      
+      // Handle bulk data updates
+      if (data.type === 'dashboard_update') {
+        setDashboardData(prev => ({
+          ...prev,
+          ...(data.nginx && { nginx: { ...prev.nginx, ...data.nginx } }),
+          ...(data.laravel && { laravel: { ...prev.laravel, ...data.laravel } }),
+          ...(data.liveLogs && { liveLogs: data.liveLogs }),
+        }));
+      }
+    };
+
+    // Listen to both connections for general updates
+    window.addEventListener('websocket:main:dashboard_update', handleDataUpdate as EventListener);
+    window.addEventListener('websocket:logs:dashboard_update', handleDataUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('websocket:main:dashboard_update', handleDataUpdate as EventListener);
+      window.removeEventListener('websocket:logs:dashboard_update', handleDataUpdate as EventListener);
+    };
+  }, []);
+
+  // Update site in dashboard data when selected site changes
+  useEffect(() => {
+    setDashboardData(prev => ({
+      ...prev,
+      site: selectedSite,
+    }));
   }, [selectedSite]);
 
-  // Simulate live log updates
+  // Fallback: Generate some mock logs if no real logs are coming through (for demo purposes)
   useEffect(() => {
     const interval = setInterval(() => {
+      // Only add mock logs if we have no real logs and no WebSocket connections are active
       setDashboardData(prev => {
-        const newLog = generateLiveLog(Date.now().toString());
-        const updatedLogs = [newLog, ...prev.liveLogs].slice(0, 50); // Keep only last 50 logs
+        // If we already have logs from WebSocket, don't add mock ones
+        if (prev.liveLogs.length > 0 && prev.liveLogs[0].id !== 'mock') {
+          return prev;
+        }
+        
+        const newLog = { ...generateLiveLog('mock-' + Date.now().toString()), id: 'mock-' + Date.now().toString() };
+        const updatedLogs = [newLog, ...prev.liveLogs].slice(0, 50);
         
         return {
           ...prev,
           liveLogs: updatedLogs,
         };
       });
-    }, 3000); // Add new log every 3 seconds
+    }, 5000); // Add mock log every 5 seconds
 
     return () => clearInterval(interval);
   }, []);

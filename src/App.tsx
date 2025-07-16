@@ -15,14 +15,20 @@ function App() {
   const { sendMessage, getConnection } = useWebSocketContext();
   const [activeTab, setActiveTab] = React.useState('nginx');
 
-  // Example of sending messages to both WebSocket connections when site changes
+  // Send site selection to WebSocket connections when site changes
   React.useEffect(() => {
     if (selectedSite) {
       const mainConnection = getConnection('main');
-      const secondaryConnection = getConnection('secondary');
+      const logsConnection = getConnection('logs');
       
       const message = JSON.stringify({
-        site: selectedSite.domain
+        type: 'site_selected',
+        site: {
+          id: selectedSite.id,
+          name: selectedSite.name,
+          domain: selectedSite.domain,
+          status: selectedSite.status
+        }
       });
       
       // Send to main connection if connected
@@ -30,9 +36,9 @@ function App() {
         sendMessage('main', message);
       }
       
-      // Send to secondary connection if connected
-      if (secondaryConnection?.isConnected) {
-        sendMessage('secondary', message);
+      // Send to logs connection if connected
+      if (logsConnection?.isConnected) {
+        sendMessage('logs', message);
       }
     }
   }, [selectedSite, sendMessage, getConnection]);

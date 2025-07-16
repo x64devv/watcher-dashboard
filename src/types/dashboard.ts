@@ -80,6 +80,39 @@ export interface LaravelLogEntry {
   extra?: any;
 }
 
+// WebSocket message types for type safety
+export interface WebSocketMessage {
+  type: string;
+  [key: string]: any;
+}
+
+export interface NginxStatsMessage extends WebSocketMessage {
+  type: 'nginx_stats';
+  stats: Partial<NginxStats>;
+}
+
+export interface LaravelStatsMessage extends WebSocketMessage {
+  type: 'laravel_stats';
+  stats: Partial<LaravelStats>;
+}
+
+export interface LiveLogMessage extends WebSocketMessage {
+  type: 'live_log';
+  log: Partial<LaravelLogEntry>;
+}
+
+export interface DashboardUpdateMessage extends WebSocketMessage {
+  type: 'dashboard_update';
+  nginx?: Partial<NginxStats>;
+  laravel?: Partial<LaravelStats>;
+  liveLogs?: LaravelLogEntry[];
+}
+
+export interface SiteSelectedMessage extends WebSocketMessage {
+  type: 'site_selected';
+  site: Site;
+}
+
 export interface DashboardData {
   site: Site;
   nginx: NginxStats;

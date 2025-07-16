@@ -26,8 +26,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
       url: 'ws://localhost:8080/api/lara-sock',
     },
     {
-      id: 'secondary',
-      url: 'ws://localhost:8081/api/secondary-sock',
+      id: 'logs',
+      url: 'ws://localhost:8080/api/logs-sock',
     }
   ]
 }) => {
@@ -42,34 +42,21 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     onMessage: (event: MessageEvent, id: string) => {
       console.log(`WebSocket ${id} message received:`, event.data);
       
-      // You can dispatch custom events here for different parts of your app to listen to
       try {
         const data = JSON.parse(event.data);
         
-        // Dispatch custom events based on message type
+        // Dispatch custom events based on message type and connection
         if (data.type) {
           window.dispatchEvent(new CustomEvent(`websocket:${id}:${data.type}`, {
             detail: { ...data, connectionId: id }
           }));
         }
+        
+        // Also dispatch a general event for this connection
+        window.dispatchEvent(new CustomEvent(`websocket:${id}:message`, {
+          detail: { data, connectionId: id, rawEvent: event }
+        }));
       } catch (error) {
-        console.warn(`Failed to parse WebSocket message from ${id}:`, error);
-      }
-      
-      config.onMessage?.(event, id);
-    },
-    onClose: (event: CloseEvent, id: string) => {
-      console.log(`WebSocket ${id} disconnected:`, event);
-      config.onClose?.(event, id);
-    },
-    onError: (event: Event, id: string) => {
-      console.error(`WebSocket ${id} error:`, event);
-      config.onError?.(event, id);
-    },
-  }));
-
-  const multipleWebSockets = useMultipleWebSockets(configsWithHandlers);
-
   const getConnection = (id: string) => {
     return multipleWebSockets.connections.get(id);
   };
