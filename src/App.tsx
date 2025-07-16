@@ -18,8 +18,8 @@ function App() {
   // Send site selection to WebSocket connections when site changes
   React.useEffect(() => {
     if (selectedSite) {
-      const mainConnection = getConnection('main');
-      const logsConnection = getConnection('logs');
+      const mainConnection = getConnection('laravel');
+      const logsConnection = getConnection('nginx');
       
       const message = JSON.stringify({
         type: 'site_selected',
