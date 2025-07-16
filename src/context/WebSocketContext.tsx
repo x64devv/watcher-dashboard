@@ -57,6 +57,11 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
           detail: { data, connectionId: id, rawEvent: event }
         }));
       } catch (error) {
+      }
+    }
+  }
+  )
+  )
   const getConnection = (id: string) => {
     return multipleWebSockets.connections.get(id);
   };
