@@ -1,4 +1,5 @@
 import React, { createContext, useContext, ReactNode } from 'react';
+import { useMemo } from 'react';
 import { useMultipleWebSockets, WebSocketConfig, WebSocketConnection } from '../hooks/useMultipleWebSockets';
 
 interface WebSocketContextType {
@@ -31,7 +32,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     }
   ]
 }) => {
-  const configsWithHandlers = configs.map(config => ({
+  const configsWithHandlers = useMemo(() => configs.map(config => ({
     ...config,
     reconnectInterval: config.reconnectInterval || 3000,
     maxReconnectAttempts: config.maxReconnectAttempts || 5,
@@ -61,7 +62,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
       
       config.onMessage?.(event, id);
     }
-  }));
+  })), [configs]);
 
   const multipleWebSockets = useMultipleWebSockets(configsWithHandlers);
 
