@@ -16,7 +16,7 @@ interface WebSocketProviderProps {
 
 export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ 
   children, 
-  url = 'ws://localhost:8080' // Default WebSocket URL - change this to your server
+  url = 'ws://localhost:8080/api/lara-sock' // Default WebSocket URL - change this to your server
 }) => {
   const webSocket = useWebSocket({
     url,

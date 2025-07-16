@@ -6,7 +6,7 @@ import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <WebSocketProvider url="ws://localhost:8080">
+    <WebSocketProvider url="ws://localhost:8080/api/lara-sock">
       <App />
     </WebSocketProvider>
   </StrictMode>

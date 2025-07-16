@@ -18,9 +18,7 @@ function App() {
   React.useEffect(() => {
     if (isConnected && selectedSite) {
       sendMessage(JSON.stringify({
-        type: 'site_changed',
-        siteId: selectedSite.id,
-        timestamp: new Date().toISOString()
+        site: selectedSite.domain
       }));
     }
   }, [selectedSite, isConnected, sendMessage]);

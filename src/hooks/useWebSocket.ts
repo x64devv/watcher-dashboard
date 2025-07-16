@@ -54,7 +54,7 @@ export const useWebSocket = (config: WebSocketConfig) => {
     }));
 
     try {
-      const socket = new WebSocket(url, protocols);
+      const socket = new WebSocket(url);
 
       socket.onopen = (event) => {
         setState(prev => ({
