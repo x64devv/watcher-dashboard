@@ -60,8 +60,10 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
       }
     }
   }
-  )
-  )
+  }));
+
+  const multipleWebSockets = useMultipleWebSockets(configsWithHandlers);
+
   const getConnection = (id: string) => {
     return multipleWebSockets.connections.get(id);
   };
