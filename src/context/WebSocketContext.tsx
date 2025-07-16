@@ -58,8 +58,9 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
         }));
       } catch (error) {
       }
+      
+      config.onMessage?.(event, id);
     }
-  }
   }));
 
   const multipleWebSockets = useMultipleWebSockets(configsWithHandlers);
